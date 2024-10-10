@@ -4,14 +4,17 @@ FROM node:14
 # Set the working directory in the container
 WORKDIR /app
 
+# Copy the public directory to the Docker image
+COPY public ./public
+
+# Copy the src directory to the Docker image
+COPY src ./src
+
 # Copy package.json and package-lock.json
 COPY package*.json ./
 
 # Install dependencies
 RUN npm install
-
-# Copy the current directory contents into the container at /app
-COPY . .
 
 # Build the app
 RUN npm run build

@@ -23,17 +23,17 @@ class Product(db.Model):
             'price': self.price
         }
 
-@app.route('/products', methods=['GET'])
+@app.route('/api/products', methods=['GET'])
 def get_products():
     products = Product.query.all()
     return jsonify([product.to_dict() for product in products])
 
-@app.route('/products/<int:id>', methods=['GET'])
+@app.route('/api/products/<int:id>', methods=['GET'])
 def get_product(id):
     product = Product.query.get_or_404(id)
     return jsonify(product.to_dict())
 
-@app.route('/products', methods=['POST'])
+@app.route('/api/products', methods=['POST'])
 def create_product():
     data = request.json
     new_product = Product(name=data['name'], description=data['description'], price=data['price'])
@@ -41,7 +41,7 @@ def create_product():
     db.session.commit()
     return jsonify(new_product.to_dict()), 201
 
-@app.route('/products/<int:id>', methods=['PUT'])
+@app.route('/api/products/<int:id>', methods=['PUT'])
 def update_product(id):
     product = Product.query.get_or_404(id)
     data = request.json
@@ -51,7 +51,7 @@ def update_product(id):
     db.session.commit()
     return jsonify(product.to_dict())
 
-@app.route('/products/<int:id>', methods=['DELETE'])
+@app.route('/api/products/<int:id>', methods=['DELETE'])
 def delete_product(id):
     product = Product.query.get_or_404(id)
     db.session.delete(product)

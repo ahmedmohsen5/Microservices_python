@@ -23,17 +23,17 @@ class User(db.Model):
             'email': self.email
         }
 
-@app.route('/users', methods=['GET'])
+@app.route('/api/users', methods=['GET'])
 def get_users():
     users = User.query.all()
     return jsonify([user.to_dict() for user in users])
 
-@app.route('/users/<int:id>', methods=['GET'])
+@app.route('/api/users/<int:id>', methods=['GET'])
 def get_user(id):
     user = User.query.get_or_404(id)
     return jsonify(user.to_dict())
 
-@app.route('/users', methods=['POST'])
+@app.route('/api/users', methods=['POST'])
 def create_user():
     data = request.json
     new_user = User(
@@ -45,7 +45,7 @@ def create_user():
     db.session.commit()
     return jsonify(new_user.to_dict()), 201
 
-@app.route('/users/<int:id>', methods=['PUT'])
+@app.route('/api/users/<int:id>', methods=['PUT'])
 def update_user(id):
     user = User.query.get_or_404(id)
     data = request.json
@@ -56,14 +56,14 @@ def update_user(id):
     db.session.commit()
     return jsonify(user.to_dict())
 
-@app.route('/users/<int:id>', methods=['DELETE'])
+@app.route('/api/users/<int:id>', methods=['DELETE'])
 def delete_user(id):
     user = User.query.get_or_404(id)
     db.session.delete(user)
     db.session.commit()
     return '', 204
 
-@app.route('/login', methods=['POST'])
+@app.route('/api/login', methods=['POST'])
 def login():
     data = request.json
     user = User.query.filter_by(username=data['username']).first()

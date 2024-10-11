@@ -39,17 +39,17 @@ class OrderItem(db.Model):
             'price': self.price
         }
 
-@app.route('/orders', methods=['GET'])
+@app.route('/api/orders', methods=['GET'])
 def get_orders():
     orders = Order.query.all()
     return jsonify([order.to_dict() for order in orders])
 
-@app.route('/orders/<int:id>', methods=['GET'])
+@app.route('/api/orders/<int:id>', methods=['GET'])
 def get_order(id):
     order = Order.query.get_or_404(id)
     return jsonify(order.to_dict())
 
-@app.route('/orders', methods=['POST'])
+@app.route('/api/orders', methods=['POST'])
 def create_order():
     data = request.json
     new_order = Order(user_id=data['user_id'], total_amount=data['total_amount'], status='pending')
@@ -64,7 +64,7 @@ def create_order():
     db.session.commit()
     return jsonify(new_order.to_dict()), 201
 
-@app.route('/orders/<int:id>', methods=['PUT'])
+@app.route('/api/orders/<int:id>', methods=['PUT'])
 def update_order(id):
     order = Order.query.get_or_404(id)
     data = request.json
@@ -72,7 +72,7 @@ def update_order(id):
     db.session.commit()
     return jsonify(order.to_dict())
 
-@app.route('/orders/<int:id>', methods=['DELETE'])
+@app.route('/api/orders/<int:id>', methods=['DELETE'])
 def delete_order(id):
     order = Order.query.get_or_404(id)
     db.session.delete(order)

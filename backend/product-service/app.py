@@ -1,7 +1,7 @@
-# backend/product-service/app.py
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from sqlalchemy.exc import SQLAlchemyError
 
 app = Flask(__name__)
 CORS(app)
@@ -22,6 +22,15 @@ class Product(db.Model):
             'description': self.description,
             'price': self.price
         }
+
+@app.route('/api/db-check', methods=['GET'])
+def check_db_connection():
+    try:
+        # Attempt to query the database
+        Product.query.limit(1).all()
+        return jsonify({"status": "success", "message": "Connected to the database successfully"}), 200
+    except SQLAlchemyError as e:
+        return jsonify({"status": "error", "message": f"Database connection failed: {str(e)}"}), 500
 
 @app.route('/api/products', methods=['GET'])
 def get_products():

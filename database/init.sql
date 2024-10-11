@@ -1,5 +1,5 @@
--- Create Users table
-CREATE TABLE users (
+-- Create User table
+CREATE TABLE User (
     id SERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
@@ -7,8 +7,8 @@ CREATE TABLE users (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Create Products table
-CREATE TABLE products (
+-- Create Product table
+CREATE TABLE Product (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     description TEXT,
@@ -20,7 +20,7 @@ CREATE TABLE products (
 -- Create Orders table
 CREATE TABLE orders (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id),
+    user_id INTEGER REFERENCES User(id),
     total_amount DECIMAL(10, 2) NOT NULL,
     status VARCHAR(20) NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
@@ -30,7 +30,7 @@ CREATE TABLE orders (
 CREATE TABLE order_items (
     id SERIAL PRIMARY KEY,
     order_id INTEGER REFERENCES orders(id),
-    product_id INTEGER REFERENCES products(id),
+    product_id INTEGER REFERENCES Product(id),
     quantity INTEGER NOT NULL,
     price DECIMAL(10, 2) NOT NULL
 );
@@ -39,7 +39,7 @@ CREATE TABLE order_items (
 CREATE OR REPLACE FUNCTION update_stock_quantity()
 RETURNS TRIGGER AS $$
 BEGIN
-    UPDATE products
+    UPDATE Product
     SET stock_quantity = stock_quantity - NEW.quantity
     WHERE id = NEW.product_id;
     RETURN NEW;
@@ -53,7 +53,7 @@ FOR EACH ROW
 EXECUTE FUNCTION update_stock_quantity();
 
 -- Insert some sample data
-INSERT INTO products (name, description, price, stock_quantity) VALUES
+INSERT INTO Product (name, description, price, stock_quantity) VALUES
 ('Laptop', 'High-performance laptop', 999.99, 50),
 ('Smartphone', 'Latest model smartphone', 699.99, 100),
 ('Headphones', 'Noise-cancelling headphones', 199.99, 200),

@@ -2,10 +2,13 @@
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+import os
+from sqlalchemy.exc import SQLAlchemyError
 
 app = Flask(__name__)
 CORS(app)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://user:password@db/ecommerce'
+database_url = os.environ.get('DATABASE_URL', 'postgresql://user:password@db/ecommerce')
+app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
@@ -79,5 +82,29 @@ def delete_order(id):
     db.session.commit()
     return '', 204
 
+
+def check_db_connection():
+    try:
+        db.session.execute('SELECT 1')
+        print("Successfully connected to the database!")
+        return True
+    except SQLAlchemyError as e:
+        print(f"Error connecting to the database: {str(e)}")
+        return False
+@app.route('/health', methods=['GET'])
+def health_check():
+    if check_db_connection():
+        return jsonify({"status": "healthy", "database": "connected"}), 200
+    else:
+        return jsonify({"status": "unhealthy", "database": "disconnected"}), 500
+    
+
 if __name__ == '__main__':
+    with app.app_context():
+        if check_db_connection():
+            db.create_all()  # Create tables if they don't exist
+        else:
+            print("Failed to connect to the database. Exiting.")
+            exit(1)
+    
     app.run(host='0.0.0.0', port=5001)

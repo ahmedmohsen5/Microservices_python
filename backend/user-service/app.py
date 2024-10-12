@@ -83,6 +83,7 @@ def login():
         return jsonify({"message": "Login successful", "user": user.to_dict()}), 200
     return jsonify({"message": "Invalid username or password"}), 401
 
+@app.route('/api/check-db-connection', methods=['GET'])
 def check_db_connection():
     try:
         # Attempt to query the database
